@@ -739,31 +739,14 @@
     document.getElementById('typing-area').addEventListener('focus', focusInput);
 
     document.getElementById('hidden-input').addEventListener('keydown', e => {
-      if (e.key === 'Escape') {
-        resetCurrent();
-        return;
-      }
-      if (e.key === 'Tab') {
+      if (e.isComposing || e.key === 'Process') return;
+      if (e.key === 'Escape') { resetCurrent(); return; }
+      if (e.key === 'Tab') { e.preventDefault(); nextCommand(); return; }
+      if (e.key === 'Backspace') { e.preventDefault(); handleBackspace(); return; }
+      if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
         e.preventDefault();
-        nextCommand();
-        return;
+        handleChar(e.key);
       }
-      if (e.key === 'Backspace') {
-        e.preventDefault();
-        handleBackspace();
-        return;
-      }
-    });
-
-    document.getElementById('hidden-input').addEventListener('input', e => {
-      const input = document.getElementById('hidden-input');
-      const val = input.value;
-      if (val.length === 0) return;
-      // Process each character (handles IME/paste edge cases)
-      for (const ch of val) {
-        handleChar(ch);
-      }
-      input.value = '';
     });
 
     // Global keydown fallback to focus
